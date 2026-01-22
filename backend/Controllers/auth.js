@@ -55,7 +55,7 @@ export const login = async (req, res) => {
         // ✅ COOKIE SET
         res.cookie("auth_token", token, {
             httpOnly: true,
-            secure: false,      // true in production (https)
+            secure: process.env.environment === "production" ? true : false,      // true in production (https)
             sameSite: process.env.environment === "production" ? "none" : "lax",
             maxAge: 24 * 60 * 60 * 1000,
         });
@@ -75,13 +75,13 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.clearCookie("auth_token", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false, // localhost
-  });
+    res.clearCookie("auth_token", {
+        httpOnly: true,
+        secure: process.env.environment === "production" ? true : false,      // true in production (https)
+        sameSite: process.env.environment === "production" ? "none" : "lax",
+    });
 
-  res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Logged out successfully" });
 };
 
 // // Get current authenticated user
