@@ -4,6 +4,7 @@ import axios from "../axiosConfig";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
+import instance from "../axiosConfig";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default function Login() {
 
     try {
       setLoading(true);
-      await axios.post("/api/auth/login", formData, {
+      await instance.post("/api/auth/login", formData, {
         withCredentials: true, // 🔥 JWT cookies ke liye important
       });
 
