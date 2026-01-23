@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "../axiosConfig";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
 import instance from "../axiosConfig";
+
+// ✅ already imported assets
+import bgVideo from "../../public/img/video1.mp4";
+import pokemonTop from "../../public/img/logo.png";
+import pokemonBottom from "../../public/img/pic.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,7 +30,6 @@ export default function Login() {
 
     const { email, password } = formData;
 
-    // 🔐 Validation
     if (!email || !password) {
       return toast.error("All fields are required");
     }
@@ -34,17 +37,16 @@ export default function Login() {
     try {
       setLoading(true);
       await instance.post("/api/auth/login", formData, {
-        withCredentials: true, // 🔥 JWT cookies ke liye important
+        withCredentials: true,
       });
 
       toast.success("Login successful 🚀");
 
       setTimeout(() => {
-        navigate("/"); 
+        navigate("/");
       }, 1200);
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
-      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -54,57 +56,130 @@ export default function Login() {
     <>
       <ToastContainer position="top-right" autoClose={2000} />
 
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 sm:p-8 rounded w-full max-w-md shadow"
+      {/* 🎥 CLEAR VIDEO */}
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover brightness-110"
         >
-          <h1 className="text-2xl font-bold text-center mb-6">
-            Login
-          </h1>
+          <source src={bgVideo} type="video/mp4" />
+        </video>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            className="border p-2 w-full mb-4"
-          />
+        {/* 🧊 WRAPPER */}
+        <div className="relative z-10 w-full max-w-md">
 
-          {/* 🔑 Password with Eye */}
-          <div className="relative mb-4">
+          {/* 🟡 TOP LOGO (HALF IN / HALF OUT) */}
+         <img
+  src={pokemonTop}
+  alt="Pokemon Logo"
+  className="
+    absolute
+    left-1/2 -translate-x-1/2
+    -top-[75px]
+
+    w-[200px]       /* 📱 Mobile */
+    sm:w-[180px]    /* 💻 Small screens */
+    md:w-[200px]    /* 💻 Laptop */
+    lg:w-[250px]    /* 🖥️ Desktop */
+
+    z-20
+  "
+/>
+
+
+          {/* 🔵 LOGIN BOX */}
+          <form
+            onSubmit={handleSubmit}
+            className="
+            relative
+            bg-blue-900/60
+            backdrop-blur-lg
+            border border-white/40
+            rounded-2xl
+            shadow-2xl
+            px-6
+            pt-14
+            pb-14
+            text-white
+          "
+          >
+            <h1 className="text-lg font-bold text-center mb-4">
+              Pokémon Login
+            </h1>
+
             <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
+              type="email"
+              name="email"
+              placeholder="Email"
               onChange={handleChange}
-              className="border p-2 w-full pr-10"
+              className="w-full mb-3 px-4 py-2 rounded bg-white text-black outline-none"
             />
 
-            <span
-              className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
+            {/* 🔐 PASSWORD */}
+            <div className="relative mb-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded bg-white text-black outline-none"
+              />
+              <span
+                className="absolute right-3 top-2.5 cursor-pointer text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </span>
+            </div>
+
+            <button
+              disabled={loading}
+              className={`
+              w-full py-2 rounded font-bold
+              ${loading ? "bg-gray-400" : "bg-yellow-400 hover:bg-yellow-500"}
+              text-black
+            `}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
+              {loading ? "Logging in..." : "LOGIN"}
+            </button>
 
-          <button
-            disabled={loading}
-            className={`${loading ? "bg-gray-400" : "bg-blue-500"
-              } text-white w-full py-2`}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            <p className="text-center mt-3 text-sm">
+              New here?
+              <Link to="/register" className="text-yellow-300 ml-1 font-semibold">
+                Register
+              </Link>
+            </p>
+          </form>
 
-          <p className="text-center mt-3">
-            New here?
-            <Link to="/register" className="text-blue-500 ml-1">
-              Register
-            </Link>
-          </p>
-        </form>
+          {/* 🧡 BOTTOM IMAGE (HALF IN / HALF OUT) */}
+
+
+
+          <img
+            src={pokemonBottom}
+            alt="Pokemon Characters"
+            className="
+    absolute
+    left-1/2 -translate-x-1/2
+    -bottom-[100px]
+
+    w-[260px]        /* 📱 Mobile */
+    sm:w-[300px]     /* 💻 Small screens */
+    md:w-[340px]     /* 💻 Laptop */
+    lg:w-[310px]     /* 🖥️ Desktop */
+
+    z-10
+  "
+          />
+
+        </div>
       </div>
     </>
   );
+
+
+
 }

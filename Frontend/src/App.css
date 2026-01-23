@@ -9,6 +9,7 @@
 .backface-hidden {
   backface-visibility: hidden;
 }
+
 .flip-card {
   width: 300px;
   height: 200px;
@@ -16,4 +17,19 @@
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
+}
+
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 1.2s linear infinite;
 }

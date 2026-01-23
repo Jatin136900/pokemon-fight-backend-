@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
 import instance from "../axiosConfig";
 
+
 export default function Register() {
   const navigate = useNavigate();
 
