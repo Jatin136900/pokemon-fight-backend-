@@ -1,8 +1,27 @@
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { sounds, play } from "../utils/sound";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function BattleIntro({ pokemons, onFinish }) {
+function BattleIntro() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // 🔥 ADAPTER (NO LOGIC CHANGE)
+  const pokemons = location.state?.fighters;
+
+  const onFinish = () => {
+    navigate("/battle-arena", {
+      state: pokemons,
+    });
+  };
+
+  // ❌ SAFETY (no crash on refresh)
+  if (!pokemons || pokemons.length < 2) {
+    navigate("/");
+    return null;
+  }
+
   const [count, setCount] = useState(3);
   const box = useRef(null);
   const played = useRef(false);
@@ -30,7 +49,7 @@ function BattleIntro({ pokemons, onFinish }) {
     }
     const timer = setTimeout(() => setCount(c => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [count, onFinish]);
+  }, [count]);
 
   return (
     <div
@@ -63,3 +82,4 @@ function BattleIntro({ pokemons, onFinish }) {
 }
 
 export default BattleIntro;
+

@@ -5,7 +5,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PokemonFetch from "./pages/PokemonFetch.jsx";
 import BattleArena from "./pages/BattleArena.jsx";
-import { AuthProvider } from './components/ContextApi.jsx'
+import BattleIntro from "./pages/BattleIntro.jsx";
+import { AuthProvider } from "./components/ContextApi.jsx";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -21,14 +22,27 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+      // 🔥 Battle Intro (3 sec screen)
       {
-        path: "battle",
+        path: "intro",
+        element: (
+          <ProtectedRoute>
+            <BattleIntro />
+          </ProtectedRoute>
+        ),
+      },
+
+      // 🔥 Final Battle Arena
+      {
+        path: "battle-arena",
         element: (
           <ProtectedRoute>
             <BattleArena />
           </ProtectedRoute>
         ),
       },
+
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
     ],

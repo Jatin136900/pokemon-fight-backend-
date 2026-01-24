@@ -3,9 +3,11 @@ import gsap from "gsap";
 import { play, sounds } from "../utils/sound.js";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function BattleArena({ onExit }) {
+function BattleArena() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // 🔥 FIX: correct state reading
   const pokemons = location.state;
 
   if (!pokemons || pokemons.length < 2) {
@@ -34,19 +36,13 @@ function BattleArena({ onExit }) {
   const hp1Ref = useRef(null);
   const hp2Ref = useRef(null);
 
-  // 🔊 ATTACK SOUND ONLY ON COMPONENT OPEN
   useEffect(() => {
     play(sounds.attack);
   }, []);
 
   useEffect(() => {
     if (!arena.current) return;
-
-    gsap.fromTo(
-      arena.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.8 }
-    );
+    gsap.fromTo(arena.current, { opacity: 0 }, { opacity: 1, duration: 0.8 });
   }, []);
 
   function getStats(p) {
@@ -93,7 +89,6 @@ function BattleArena({ onExit }) {
 
     if (attacker === "p1") {
       setTurn("p2");
-
       setTimeout(() => {
         if (hp.p2 > 0 && hp.p1 > 0) {
           attack("p2", "p1");
@@ -105,7 +100,7 @@ function BattleArena({ onExit }) {
 
   const winner =
     hp.p1 === 0 ? pokemons[1].name :
-    hp.p2 === 0 ? pokemons[0].name : null;
+      hp.p2 === 0 ? pokemons[0].name : null;
 
   useEffect(() => {
     if (winner && !winPlayed.current) {
@@ -119,8 +114,6 @@ function BattleArena({ onExit }) {
       ref={arena}
       className="fixed inset-0 z-50 bg-black text-white px-6 py-10"
     >
-
-      {/* 🔙 BACK BUTTON */}
       <button
         onClick={() => navigate(-1)}
         className="absolute top-6 left-6 px-5 py-2 bg-gray-800 rounded-full font-bold hover:bg-gray-700"
