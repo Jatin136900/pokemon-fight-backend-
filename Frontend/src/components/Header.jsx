@@ -1,17 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, LogIn } from "lucide-react";
+import { useAuth } from "../components/ContextApi.jsx";
 
-function logoutUser() {
-  axios.post("/api/auth/logout")
-    .then(() => {
-      alert("Logged out")
-      window.location.href = "/login";
-    });
-}
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  
+
+  async function logoutUser() {
+    try {
+      await axios.post("/api/auth/logout", { withCredentials: true });
+      setIsLoggedIn(false);          // 🔥 context update
+      navigate("/login");            // 🔥 soft redirect
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <header className="w-full bg-orange-800">
@@ -30,17 +37,22 @@ export default function Header() {
         </button>
 
         {/* Desktop nav */}
-        <nav className="hidden md:block">
-          <ul className="flex gap-8 text-white font-medium items-center">
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          </ul>
+        <nav className="hidden md:flex items-center gap-6 text-white font-medium">
+          {!isLoggedIn ? (
+            <Link to="/login" className="flex items-center gap-2">
+              <LogIn size={18} />
+              Login
+            </Link>
+          ) : (
+            <button
+              onClick={logoutUser}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
+          )}
         </nav>
-
-        <button className="hidden md:inline-block text-white font-medium cursor-pointer ml-4" onClick={logoutUser}>
-          Logout
-        </button>
       </div>
 
       {/* Mobile dropdown */}
@@ -48,19 +60,34 @@ export default function Header() {
         <nav>
           <ul className="flex flex-col gap-4 text-white font-medium px-6 py-4">
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/" onClick={() => setOpen(false)}>Home</Link>
             </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <button className="text-left w-full text-white font-medium" onClick={() => { logoutUser(); setOpen(false); }}>
-                Logout
-              </button>
-            </li>
+
+            {!isLoggedIn ? (
+              <li>
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <LogIn size={18} />
+                  Login
+                </Link>
+              </li>
+            ) : (
+              <li>
+                <button
+                  onClick={() => {
+                    logoutUser();
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2 w-full text-left"
+                >
+                  <LogOut size={18} />
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

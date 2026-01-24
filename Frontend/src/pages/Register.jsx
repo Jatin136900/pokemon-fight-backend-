@@ -5,6 +5,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
 import instance from "../axiosConfig";
+import pokemonTop from "../../public/img/logo.png";
+import pokemonBottom from "../../public/img/pic.png";
+import bgPic from "../../public/img/img4.jpg";
 
 
 export default function Register() {
@@ -64,75 +67,139 @@ export default function Register() {
     <>
       <ToastContainer position="top-right" autoClose={2000} />
 
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 sm:p-8 rounded w-full max-w-md shadow"
-        >
-          <h2 className="text-xl font-semibold mb-4 text-center">
-            Register
-          </h2>
+      {/* 🖼️ CLEAR IMAGE BACKGROUND */}
+      <div
+        className="relative min-h-screen flex items-center justify-center overflow-hidden px-4"
+        style={{
+          backgroundImage: `url(${bgPic})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* 🧊 WRAPPER */}
+        <div className="relative z-10 w-full max-w-md">
 
-          <input
-            name="name"
-            onChange={handleChange}
-            placeholder="Name"
-            className="border p-2 w-full mb-3"
+          {/* 🟡 TOP LOGO (HALF IN / HALF OUT) */}
+          <img
+            src={pokemonTop}
+            alt="Pokemon Logo"
+            className="
+            absolute
+            left-1/2 -translate-x-1/2
+            -top-[75px]
+
+            w-[200px]
+            sm:w-[180px]
+            md:w-[200px]
+            lg:w-[250px]
+
+            z-20
+          "
           />
 
-          <input
-            name="username"
-            onChange={handleChange}
-            placeholder="Username"
-            className="border p-2 w-full mb-3"
-          />
+          {/* 🔵 REGISTER BOX (BLUR ONLY HERE) */}
+          <form
+            onSubmit={handleSubmit}
+            className="
+            relative
+            bg-blue-900/60
+            backdrop-blur-lg
+            border border-white/40
+            rounded-2xl
+            shadow-2xl
+            px-6
+            pt-14
+            pb-14
+            text-white
+          "
+          >
+            <h2 className="text-lg font-bold text-center mb-4">
+              Pokémon Register
+            </h2>
 
-          <input
-            name="email"
-            type="email"
-            onChange={handleChange}
-            placeholder="Email"
-            className="border p-2 w-full mb-3"
-          />
-
-          {/* 🔑 Password with Eye */}
-          <div className="relative mb-3">
             <input
-              name="password"
-              type={showPassword ? "text" : "password"}
+              name="name"
               onChange={handleChange}
-              placeholder="Password"
-              className="border p-2 w-full pr-10"
+              placeholder="Name"
+              className="w-full mb-3 px-4 py-2 rounded bg-white text-black outline-none"
             />
 
-            <span
-              className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
+            <input
+              name="username"
+              onChange={handleChange}
+              placeholder="Username"
+              className="w-full mb-3 px-4 py-2 rounded bg-white text-black outline-none"
+            />
 
-          <button
-            disabled={loading}
-            className={`${
-              loading ? "bg-gray-400" : "bg-blue-500"
-            } text-white w-full py-2`}
-          >
-            {loading ? "Registering..." : "Register"}
-          </button>
+            <input
+              name="email"
+              type="email"
+              onChange={handleChange}
+              placeholder="Email"
+              className="w-full mb-3 px-4 py-2 rounded bg-white text-black outline-none"
+            />
 
-          <p className="text-sm mt-3 text-center">
-            Already have an account?{" "}
-            <span
-              className="text-blue-500 cursor-pointer"
-              onClick={() => navigate("/login")}
+            {/* 🔑 PASSWORD */}
+            <div className="relative mb-4">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                onChange={handleChange}
+                placeholder="Password"
+                className="w-full px-4 py-2 rounded bg-white text-black outline-none"
+              />
+              <span
+                className="absolute right-3 top-2.5 cursor-pointer text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </span>
+            </div>
+
+            <button
+              disabled={loading}
+              className={`
+                 glitter-new
+              w-full py-2 rounded font-bold
+              ${loading ? "bg-gray-400" : "bg-yellow-400 hover:bg-yellow-500"}
+              text-black
+            `}
             >
-              Login
-            </span>
-          </p>
-        </form>
+              {loading ? "Registering..." : "REGISTER"}
+            </button>
+
+            <p className="text-center mt-3 text-sm">
+              Already have an account?
+              <span
+                className="text-yellow-300 ml-1 font-semibold cursor-pointer pokemon-text-glitter"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </span>
+
+            </p>
+          </form>
+
+          {/* 🧡 BOTTOM IMAGE (HALF IN / HALF OUT) */}
+          <img
+            src={pokemonBottom}
+            alt="Pokemon Characters"
+            className="
+            absolute
+            left-1/2 -translate-x-1/2
+            -bottom-[100px]
+
+            w-[260px]
+            sm:w-[300px]
+            md:w-[340px]
+            lg:w-[310px]
+
+            z-10
+          "
+          />
+        </div>
       </div>
     </>
   );
+
 }

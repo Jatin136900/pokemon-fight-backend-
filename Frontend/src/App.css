@@ -33,3 +33,110 @@
 .animate-spin-slow {
   animation: spin-slow 1.2s linear infinite;
 }
+
+
+
+/* ✨ Pokémon Text Glitter */
+.pokemon-text-glitter {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+
+
+.pokemon-text-glitter:hover::after {
+  animation: text-glitter 0.6s ease forwards;
+}
+
+@keyframes text-glitter {
+  from {
+    left: -120%;
+  }
+  to {
+    left: 120%;
+  }
+}
+
+.pokemon-text-glitter:hover {
+  text-shadow:
+    0 0 6px rgba(250, 204, 21, 0.9),
+    0 0 12px rgba(250, 204, 21, 0.6);
+}
+
+
+
+
+
+/* new //////////////// */
+
+
+
+/* ✨ Glitter Button Base */
+.glitter-new {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+/* Hover lift */
+.glitter-new:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(250, 204, 21, 0.6);
+}
+
+/* ✨ Sprinkles Particles */
+.glitter-new::before,
+.glitter-new::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  opacity: 0;
+}
+
+/* 🎉 SPRINKLES EFFECT */
+.glitter-new:hover::before {
+  opacity: 1;
+  background-image:
+    radial-gradient(circle, #facc15 2px, transparent 3px),
+    radial-gradient(circle, #fde047 2px, transparent 3px),
+    radial-gradient(circle, #fbbf24 2px, transparent 3px),
+    radial-gradient(circle, #fde68a 2px, transparent 3px);
+  background-size: 12px 12px;
+  animation: sprinkles 0.8s linear infinite;
+}
+
+/* ✨ SHIMMER GLOW */
+
+/* 🎆 Sprinkle Motion */
+@keyframes sprinkles {
+  0% {
+    background-position:
+      0% 100%,
+      30% 120%,
+      60% 110%,
+      90% 130%;
+  }
+  100% {
+    background-position:
+      0% -20%,
+      30% -40%,
+      60% -30%,
+      90% -50%;
+  }
+}
+
+/* ✨ Shimmer Sweep */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
+
+

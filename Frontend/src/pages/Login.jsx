@@ -5,10 +5,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
 import instance from "../axiosConfig";
 
-// ✅ already imported assets
 import bgVideo from "../../public/img/video1.mp4";
 import pokemonTop from "../../public/img/logo.png";
 import pokemonBottom from "../../public/img/pic.png";
+import { useAuth } from "../components/ContextApi.jsx";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { setIsLoggedIn } = useAuth();
+
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,6 +45,9 @@ export default function Login() {
 
       toast.success("Login successful 🚀");
 
+
+      setIsLoggedIn(true);
+      
       setTimeout(() => {
         navigate("/");
       }, 1200);
@@ -72,10 +78,10 @@ export default function Login() {
         <div className="relative z-10 w-full max-w-md">
 
           {/* 🟡 TOP LOGO (HALF IN / HALF OUT) */}
-         <img
-  src={pokemonTop}
-  alt="Pokemon Logo"
-  className="
+          <img
+            src={pokemonTop}
+            alt="Pokemon Logo"
+            className="
     absolute
     left-1/2 -translate-x-1/2
     -top-[75px]
@@ -87,7 +93,7 @@ export default function Login() {
 
     z-20
   "
-/>
+          />
 
 
           {/* 🔵 LOGIN BOX */}
@@ -138,19 +144,25 @@ export default function Login() {
             <button
               disabled={loading}
               className={`
-              w-full py-2 rounded font-bold
-              ${loading ? "bg-gray-400" : "bg-yellow-400 hover:bg-yellow-500"}
-              text-black
-            `}
+    glitter-new
+    relative overflow-hidden
+    w-full py-2 rounded font-bold
+    ${loading ? "bg-gray-400" : "bg-yellow-400"}
+    text-black
+  `}
             >
               {loading ? "Logging in..." : "LOGIN"}
             </button>
 
             <p className="text-center mt-3 text-sm">
               New here?
-              <Link to="/register" className="text-yellow-300 ml-1 font-semibold">
+              <Link
+                to="/register"
+                className="text-yellow-300 ml-1 font-semibold pokemon-text-glitter"
+              >
                 Register
               </Link>
+
             </p>
           </form>
 
