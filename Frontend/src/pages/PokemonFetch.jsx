@@ -103,7 +103,7 @@ function PokemonFetch() {
             <div className="text-center mt-6">
               <button
                 onClick={startBattle}
-                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
+                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold cursor-pointer hover:bg-red-700 transition"
               >
                 ⚔️ Fight
               </button>
@@ -120,10 +120,11 @@ function PokemonFetch() {
               p.sprites?.other?.dream_world?.front_default;
 
             return (
-              <div
+              <div onClick={() => selectForFight(p)}
                 key={p.id}
                 className="
                   relative h-[360px]
+                  cursor-pointer
                   rounded-3xl
                   bg-gradient-to-b from-[#101935] to-[#0b1220]
                   shadow-xl
@@ -131,6 +132,7 @@ function PokemonFetch() {
                   pt-16 pb-6
                   transition-all duration-500
                   hover:-translate-y-3 hover:shadow-2xl
+                  
                 "
               >
                 <img
@@ -188,12 +190,12 @@ function PokemonFetch() {
                 </button>
 
                 {/* 🔥 ADDED: Select for Fight */}
-                <button
+                {/* <button
                   onClick={() => selectForFight(p)}
                   className="mt-2 px-6 py-2 rounded-xl bg-red-500/20 text-red-400 text-sm hover:bg-red-500/30 transition"
                 >
                   Select for Fight
-                </button>
+                </button> */}
 
               </div>
             );

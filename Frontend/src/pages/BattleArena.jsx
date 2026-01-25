@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { play, sounds } from "../utils/sound.js";
 import { useLocation, useNavigate } from "react-router-dom";
+import bg from '../../public/img/img1.jpg';
 
 function BattleArena() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function BattleArena() {
         </h1>
         <button
           onClick={() => navigate("/")}
+          // onClick={() => navigate("/", { replace: true, state: null })}
           className="px-6 py-3 bg-red-500 rounded-full font-bold"
         >
           🔙 Go Back
@@ -115,7 +117,7 @@ function BattleArena() {
       className="fixed inset-0 z-50 bg-black text-white px-6 py-10"
     >
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="absolute top-6 left-6 px-5 py-2 bg-gray-800 rounded-full font-bold hover:bg-gray-700"
       >
         ⬅ Back
