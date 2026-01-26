@@ -8,7 +8,7 @@ export default function Jatin() {
         <>
             <Header />
             <Outlet />
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 }

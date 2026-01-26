@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // 🔥 ADDED
+import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig";
 import bgVideo from "../../public/img/video1.mp4";
 import pokeball from "../../public/img/ball2.png";
@@ -10,8 +10,8 @@ function PokemonFetch() {
   const [loading, setLoading] = useState(true);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
 
-  const [fighters, setFighters] = useState([]); // 🔥 ADDED
-  const navigate = useNavigate(); // 🔥 ADDED
+  const [fighters, setFighters] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPokemon();
@@ -25,15 +25,24 @@ function PokemonFetch() {
     setLoading(false);
   }
 
-  // 🔥 ADDED: select pokemon for fight
+  // ✅ SELECT / DESELECT / SWAP LOGIC
   function selectForFight(p) {
-    if (fighters.find(f => f.id === p.id)) return;
-    if (fighters.length < 2) {
-      setFighters(prev => [...prev, p]);
-    }
+    setFighters(prev => {
+      // deselect if already selected
+      if (prev.find(f => f.id === p.id)) {
+        return prev.filter(f => f.id !== p.id);
+      }
+
+      // add if less than 2
+      if (prev.length < 2) {
+        return [...prev, p];
+      }
+
+      // replace second if already 2
+      return [prev[0], p];
+    });
   }
 
-  // 🔥 ADDED: start battle
   function startBattle() {
     navigate("intro", {
       state: { fighters },
@@ -67,7 +76,7 @@ function PokemonFetch() {
         </div>
       )}
 
-      {/* 🔥 DETAILS MODAL */}
+      {/* DETAILS MODAL */}
       {selectedPokemon && (
         <Details
           pokemon={selectedPokemon}
@@ -75,7 +84,7 @@ function PokemonFetch() {
         />
       )}
 
-      {/* 🔥 ADDED: Selected Fighters Section */}
+      {/* SELECTED FIGHTERS */}
       {fighters.length > 0 && (
         <div className="relative z-10 max-w-7xl mx-auto pt-10">
           <h2 className="text-white text-2xl font-bold mb-4 text-center">
@@ -103,7 +112,7 @@ function PokemonFetch() {
             <div className="text-center mt-6">
               <button
                 onClick={startBattle}
-                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold cursor-pointer hover:bg-red-700 transition"
+                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
               >
                 ⚔️ Fight
               </button>
@@ -112,18 +121,22 @@ function PokemonFetch() {
         </div>
       )}
 
-      {/* Content */}
+      {/* POKEMON GRID */}
       <div className="relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto pt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto py-25 ">
           {pokemon.map((p) => {
             const img =
               p.sprites?.other?.dream_world?.front_default;
 
+            const isSelected = fighters.some(f => f.id === p.id);
+
             return (
-              <div onClick={() => selectForFight(p)}
+              <div
                 key={p.id}
-                className="
+                onClick={() => selectForFight(p)}
+                className={`
                   relative h-[360px]
+                  mb-8
                   cursor-pointer
                   rounded-3xl
                   bg-gradient-to-b from-[#101935] to-[#0b1220]
@@ -132,13 +145,18 @@ function PokemonFetch() {
                   pt-16 pb-6
                   transition-all duration-500
                   hover:-translate-y-3 hover:shadow-2xl
-                  
-                "
+
+                 ${isSelected ? "neon-red-border" : ""}
+
+
+
+
+                `}
               >
                 <img
                   src={img}
                   alt={p.name}
-                  className="absolute -top-12 w-36 h-36 drop-shadow-2xl transition-all duration-500 hover:-translate-y-3 "
+                  className="absolute -top-12 w-36 h-36 drop-shadow-2xl transition-all duration-500 hover:-translate-y-3"
                 />
 
                 <h3 className="text-white text-2xl font-bold capitalize mt-16">
@@ -149,12 +167,7 @@ function PokemonFetch() {
                   {p.types.map((t, i) => (
                     <span
                       key={i}
-                      className="
-                        px-3 py-1 text-xs font-semibold
-                        rounded-full
-                        bg-green-500/20 text-green-400
-                        capitalize
-                      "
+                      className="px-3 py-1 text-xs font-semibold rounded-full bg-green-500/20 text-green-400 capitalize"
                     >
                       {t.type.name}
                     </span>
@@ -177,26 +190,16 @@ function PokemonFetch() {
                   </div>
                 </div>
 
+                {/* MORE DETAILS (NO SELECT) */}
                 <button
-                  onClick={() => setSelectedPokemon(p)}
-                  className="
-                    cursor-pointer
-                    mt-6 px-6 py-2 rounded-xl
-                    bg-white/10 text-white text-sm
-                    hover:bg-white/20 transition
-                  "
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPokemon(p);
+                  }}
+                  className="mt-6 px-6 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition"
                 >
                   ⚡ More details
                 </button>
-
-                {/* 🔥 ADDED: Select for Fight */}
-                {/* <button
-                  onClick={() => selectForFight(p)}
-                  className="mt-2 px-6 py-2 rounded-xl bg-red-500/20 text-red-400 text-sm hover:bg-red-500/30 transition"
-                >
-                  Select for Fight
-                </button> */}
-
               </div>
             );
           })}
