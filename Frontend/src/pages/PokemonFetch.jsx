@@ -222,17 +222,39 @@ function PokemonFetch() {
         </div>
 
         {/* LOAD MORE */}
-        <div className="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-50">
+        <div
+          className="
+    fixed 
+    right-3 bottom-3
+    sm:right-5 sm:bottom-5
+    md:right-6 md:bottom-6
+    z-50
+  "
+        >
           <button
             onClick={loadMorePokemon}
-            className="glitter-new flex items-center gap-2 px-6 py-2.5 font-semibold rounded-lg
-    bg-[#fdc700] text-white
-    backdrop-blur-md shadow-lg border border-none
-    transition-all hover:scale-105"
+            className="
+      glitter-new
+      flex items-center justify-center gap-2
+      px-4 py-2
+      sm:px-6 sm:py-2.5
+      text-sm sm:text-base
+      font-semibold
+      rounded-lg
+      bg-[#fdc700] text-white
+      backdrop-blur-md
+      shadow-lg
+      border-none
+      transition-all
+      hover:scale-105
+      active:scale-95
+      focus:outline-none
+    "
           >
             More Pokémon
           </button>
         </div>
+
 
 
 
