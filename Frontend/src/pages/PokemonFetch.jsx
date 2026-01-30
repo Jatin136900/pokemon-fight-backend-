@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import instance from "../axiosConfig";
 import bgVideo from "../../public/img/video1.mp4";
 import pokeball from "../../public/img/ball2.png";
@@ -15,10 +15,15 @@ function PokemonFetch() {
   const [search, setSearch] = useState("");    // ✅ search
 
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ ADD
 
-  // ✅ INITIAL FETCH
+  // ✅ INITIAL FETCH (URL OFFSET SAFE)
   useEffect(() => {
-    fetchPokemon(false, 0);
+    const params = new URLSearchParams(location.search);
+    const urlOffset = Number(params.get("offset")) || 0;
+
+    setOffset(urlOffset);
+    fetchPokemon(false, urlOffset);
   }, []);
 
   // ✅ FETCH FUNCTION (OFFSET SAFE)
@@ -28,18 +33,22 @@ function PokemonFetch() {
       { withCredentials: true }
     );
 
-    setPokemon(prev =>
-      loadMore ? [...prev, ...res.data] : res.data
-    );
+    // ✅ backend already cumulative → always replace
+    setPokemon(res.data);
 
     setLoading(false);
   }
 
-  // ✅ LOAD 20 MORE (NO DUPLICATES)
+
+  // ✅ LOAD 20 MORE (NO DUPLICATES + URL SYNC)
   function loadMorePokemon() {
     const newOffset = offset + 20;
+
     setOffset(newOffset);
     fetchPokemon(true, newOffset);
+
+    // ✅ ADD: persist offset in URL (refresh safe)
+    navigate(`?offset=${newOffset}`, { replace: true });
   }
 
   // ✅ SELECT / DESELECT / SWAP
@@ -146,7 +155,6 @@ function PokemonFetch() {
       {/* POKEMON GRID */}
       <div className="relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto py-25">
-
           {pokemon
             .filter(p =>
               p.name.toLowerCase().includes(search.toLowerCase())
@@ -222,42 +230,30 @@ function PokemonFetch() {
         </div>
 
         {/* LOAD MORE */}
-        <div
-          className="
-    fixed 
-    right-3 bottom-3
-    sm:right-5 sm:bottom-5
-    md:right-6 md:bottom-6
-    z-50
-  "
-        >
+        <div className="fixed right-3 bottom-3 sm:right-5 sm:bottom-5 md:right-6 md:bottom-6 z-50">
           <button
             onClick={loadMorePokemon}
             className="
-      glitter-new
-      flex items-center justify-center gap-2
-      px-4 py-2
-      sm:px-6 sm:py-2.5
-      text-sm sm:text-base
-      font-semibold
-      rounded-lg
-      bg-[#fdc700] text-white
-      backdrop-blur-md
-      shadow-lg
-      border-none
-      transition-all
-      hover:scale-105
-      active:scale-95
-      focus:outline-none
-    "
+              glitter-new
+              flex items-center justify-center gap-2
+              px-4 py-2
+              sm:px-6 sm:py-2.5
+              text-sm sm:text-base
+              font-semibold
+              rounded-lg
+              bg-[#fdc700] text-white
+              backdrop-blur-md
+              shadow-lg
+              border-none
+              transition-all
+              hover:scale-105
+              active:scale-95
+              focus:outline-none
+            "
           >
             More Pokémon
           </button>
         </div>
-
-
-
-
       </div>
     </div>
   );
