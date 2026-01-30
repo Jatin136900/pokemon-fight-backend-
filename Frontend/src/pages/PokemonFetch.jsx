@@ -11,42 +11,54 @@ function PokemonFetch() {
   const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   const [fighters, setFighters] = useState([]);
+  const [offset, setOffset] = useState(0);     // ✅ pagination
+  const [search, setSearch] = useState("");    // ✅ search
+
   const navigate = useNavigate();
 
+  // ✅ INITIAL FETCH
   useEffect(() => {
-    fetchPokemon();
+    fetchPokemon(false, 0);
   }, []);
 
-  async function fetchPokemon() {
-    const res = await instance.get("/pokemon", {
-      withCredentials: true,
-    });
-    setPokemon(res.data);
+  // ✅ FETCH FUNCTION (OFFSET SAFE)
+  async function fetchPokemon(loadMore = false, customOffset = 0) {
+    const res = await instance.get(
+      `/pokemon?offset=${customOffset}`,
+      { withCredentials: true }
+    );
+
+    setPokemon(prev =>
+      loadMore ? [...prev, ...res.data] : res.data
+    );
+
     setLoading(false);
   }
 
-  // ✅ SELECT / DESELECT / SWAP LOGIC
+  // ✅ LOAD 20 MORE (NO DUPLICATES)
+  function loadMorePokemon() {
+    const newOffset = offset + 20;
+    setOffset(newOffset);
+    fetchPokemon(true, newOffset);
+  }
+
+  // ✅ SELECT / DESELECT / SWAP
   function selectForFight(p) {
     setFighters(prev => {
-      // deselect if already selected
       if (prev.find(f => f.id === p.id)) {
         return prev.filter(f => f.id !== p.id);
       }
 
-      // add if less than 2
       if (prev.length < 2) {
         return [...prev, p];
       }
 
-      // replace second if already 2
       return [prev[0], p];
     });
   }
 
   function startBattle() {
-    navigate("intro", {
-      state: { fighters },
-    });
+    navigate("intro", { state: { fighters } });
   }
 
   return (
@@ -62,7 +74,6 @@ function PokemonFetch() {
         playsInline
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
       {/* Loader */}
@@ -83,6 +94,17 @@ function PokemonFetch() {
           onClose={() => setSelectedPokemon(null)}
         />
       )}
+
+      {/* SEARCH INPUT */}
+      <div className="relative z-10 max-w-md mx-auto mb-12">
+        <input
+          type="text"
+          placeholder="Search Pokémon..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-5 py-3 rounded-xl bg-white/10 text-white placeholder-gray-400 outline-none"
+        />
+      </div>
 
       {/* SELECTED FIGHTERS */}
       {fighters.length > 0 && (
@@ -112,7 +134,7 @@ function PokemonFetch() {
             <div className="text-center mt-6">
               <button
                 onClick={startBattle}
-                className=" cursor-pointer px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
+                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
               >
                 ⚔️ Fight
               </button>
@@ -123,87 +145,97 @@ function PokemonFetch() {
 
       {/* POKEMON GRID */}
       <div className="relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto py-25 ">
-          {pokemon.map((p) => {
-            const img =
-              p.sprites?.other?.dream_world?.front_default;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto py-25">
 
-            const isSelected = fighters.some(f => f.id === p.id);
+          {pokemon
+            .filter(p =>
+              p.name.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((p) => {
+              const img =
+                p.sprites?.other?.dream_world?.front_default;
+              const isSelected =
+                fighters.some(f => f.id === p.id);
 
-            return (
-              <div
-                key={p.id}
-                onClick={() => selectForFight(p)}
-                className={`
-                  relative h-[360px]
-                  mb-8
-                  cursor-pointer
-                  rounded-3xl
-                  bg-gradient-to-b from-[#101935] to-[#0b1220]
-                  shadow-xl
-                  flex flex-col items-center
-                  pt-16 pb-6
-                  transition-all duration-500
-                  hover:-translate-y-3 hover:shadow-2xl
-
-                 ${isSelected ? "neon-red-border" : ""}
-
-
-
-
-                `}
-              >
-                <img
-                  src={img}
-                  alt={p.name}
-                  className="absolute -top-12 w-36 h-36 drop-shadow-2xl transition-all duration-500 hover:-translate-y-3"
-                />
-
-                <h3 className="text-white text-2xl font-bold capitalize mt-16">
-                  {p.name}
-                </h3>
-
-                <div className="flex gap-3 mt-3">
-                  {p.types.map((t, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 text-xs font-semibold rounded-full bg-green-500/20 text-green-400 capitalize"
-                    >
-                      {t.type.name}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex justify-between w-full px-10 mt-6 text-gray-300 text-sm">
-                  <div className="text-center">
-                    <p className="font-semibold text-white">
-                      {p.height / 10} M
-                    </p>
-                    <span className="opacity-70">Altura</span>
-                  </div>
-
-                  <div className="text-center">
-                    <p className="font-semibold text-white">
-                      {p.weight / 10} KG
-                    </p>
-                    <span className="opacity-70">Weight</span>
-                  </div>
-                </div>
-
-                {/* MORE DETAILS (NO SELECT) */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedPokemon(p);
-                  }}
-                  className="mt-6 px-6 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition"
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => selectForFight(p)}
+                  className={`
+                    relative h-[360px] mb-8 cursor-pointer rounded-3xl
+                    bg-gradient-to-b from-[#101935] to-[#0b1220]
+                    shadow-xl flex flex-col items-center
+                    pt-16 pb-6 transition-all duration-500
+                    hover:-translate-y-3 hover:shadow-2xl
+                    ${isSelected ? "neon-red-border" : ""}
+                  `}
                 >
-                  ⚡ More details
-                </button>
-              </div>
-            );
-          })}
+                  <img
+                    src={img}
+                    alt={p.name}
+                    className="absolute -top-12 w-36 h-36 drop-shadow-2xl"
+                  />
+
+                  <h3 className="text-white text-2xl font-bold capitalize mt-16">
+                    {p.name}
+                  </h3>
+
+                  <div className="flex gap-3 mt-3">
+                    {p.types.map((t, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 text-xs font-semibold rounded-full bg-green-500/20 text-green-400 capitalize"
+                      >
+                        {t.type.name}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between w-full px-10 mt-6 text-gray-300 text-sm">
+                    <div className="text-center">
+                      <p className="font-semibold text-white">
+                        {p.height / 10} M
+                      </p>
+                      <span className="opacity-70">Altura</span>
+                    </div>
+
+                    <div className="text-center">
+                      <p className="font-semibold text-white">
+                        {p.weight / 10} KG
+                      </p>
+                      <span className="opacity-70">Weight</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPokemon(p);
+                    }}
+                    className="mt-6 px-6 py-2 rounded-xl bg-white/10 text-white text-sm hover:bg-white/20 transition"
+                  >
+                    ⚡ More details
+                  </button>
+                </div>
+              );
+            })}
         </div>
+
+        {/* LOAD MORE */}
+        <div className="fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-50">
+          <button
+            onClick={loadMorePokemon}
+            className="glitter-new flex items-center gap-2 px-6 py-2.5 font-semibold rounded-lg
+    bg-[#fdc700] text-white
+    backdrop-blur-md shadow-lg border border-none
+    transition-all hover:scale-105"
+          >
+            More Pokémon
+          </button>
+        </div>
+
+
+
       </div>
     </div>
   );

@@ -3,22 +3,26 @@ import { importDataFromURL } from "../utils/importDataFromURL.js";
 
 const POKE_BASE_URL = "https://pokeapi.co/api/v2/pokemon";
 
-export async function fetchPokemon(req, res) {
-    try {
-        const temp = await importDataFromURL(POKE_BASE_URL + "/?limit=20&offset=0");
-        // console.log(temp)
-        const result = temp.results
-        // console.log(result)
-        const promises = result.map((pokemon) =>
-            importDataFromURL(pokemon.url, true)
-        );
 
-        const pokemons = await Promise.all(promises);
-        // console.log(pokemons)
-        return res.status(200).json(pokemons);
-    } catch (error) {
-        return res.status(500).json({ message: error.message })
-    }
+export async function fetchPokemon(req, res) {
+  try {
+    const limit = 20;
+    const offset = Number(req.query.offset) || 0;
+
+    const temp = await importDataFromURL(
+      `${POKE_BASE_URL}/?limit=${limit}&offset=${offset}`
+    );
+
+    const promises = temp.results.map((pokemon) =>
+      importDataFromURL(pokemon.url, true)
+    );
+
+    const pokemons = await Promise.all(promises);
+
+    return res.status(200).json(pokemons);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 }
 
 
