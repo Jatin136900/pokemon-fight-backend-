@@ -1,3 +1,17 @@
+@font-face {
+  font-family: "Jatin";
+  src: url("./fonts/Condor-BlackItalic.ttf") format("truetype");
+}
+
+/* 🔥 PURE APP KE LIYE */
+* {
+  font-family: "Jatin", sans-serif;
+}
+
+
+
+
+
 .perspective {
   perspective: 1000px;
 }
@@ -147,7 +161,8 @@
 
 .neon-red-border {
   position: relative;
-  border-radius: 1.5rem; /* match card */
+  border-radius: 1.5rem;
+  /* match card */
   box-shadow:
     0 0 10px rgba(255, 0, 0, 0.6),
     0 0 25px rgba(255, 0, 0, 0.8),

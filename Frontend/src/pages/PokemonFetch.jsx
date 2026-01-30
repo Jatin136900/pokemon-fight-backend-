@@ -112,7 +112,7 @@ function PokemonFetch() {
             <div className="text-center mt-6">
               <button
                 onClick={startBattle}
-                className="px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
+                className=" cursor-pointer px-10 py-3 bg-red-600 text-white rounded-xl text-lg font-bold hover:bg-red-700 transition"
               >
                 ⚔️ Fight
               </button>
