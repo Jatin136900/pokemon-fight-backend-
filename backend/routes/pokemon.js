@@ -1,12 +1,27 @@
+// import { Router } from "express";
+// import { fetchPokemon, fightPokemon } from "../Controllers/Pokemon.js";
+
+// const pokemonRouter = Router();
+
+
+
+// pokemonRouter.get("/", fetchPokemon);
+// pokemonRouter.post("/fight", fightPokemon)
+
+
+// export default pokemonRouter;
+
+
 import { Router } from "express";
-import { fetchPokemon, fightPokemon } from "../Controllers/Pokemon.js";
+import { fetchPokemon, fightPokemon, getHistory } from "../Controllers/Pokemon.js";
+import { protect } from "../middlewares/auth.js"; // ✅ NAMED IMPORT
 
 const pokemonRouter = Router();
 
-
-
 pokemonRouter.get("/", fetchPokemon);
-pokemonRouter.post("/fight", fightPokemon)
 
+// 🔐 protected routes
+pokemonRouter.post("/fight", protect, fightPokemon);
+pokemonRouter.get("/history", protect, getHistory);
 
 export default pokemonRouter;

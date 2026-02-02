@@ -7,6 +7,8 @@ import PokemonFetch from "./pages/PokemonFetch.jsx";
 import BattleArena from "./pages/BattleArena.jsx";
 import BattleIntro from "./pages/BattleIntro.jsx";
 import { AuthProvider } from "./components/ContextApi.jsx";
+import History from "./components/History.jsx";
+
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -42,6 +44,20 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+
+      {
+        path: "history",
+        element: (
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        ),
+      },
+
+
+
+
 
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },

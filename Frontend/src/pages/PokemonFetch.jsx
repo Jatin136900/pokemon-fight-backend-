@@ -66,9 +66,29 @@ function PokemonFetch() {
     });
   }
 
-  function startBattle() {
-    navigate("intro", { state: { fighters } });
+  async function startBattle() {
+    try {
+      await instance.post(
+        "/pokemon/fight",
+        {
+          pokemon1: {
+            id: fighters[0].id,
+            name: fighters[0].name,
+          },
+          pokemon2: {
+            id: fighters[1].id,
+            name: fighters[1].name,
+          },
+        },
+        { withCredentials: true }
+      );
+
+      navigate("intro", { state: { fighters } });
+    } catch (err) {
+      console.error("Fight error:", err);
+    }
   }
+
 
   return (
     <div className="min-h-screen pt-24 px-6 relative overflow-hidden">

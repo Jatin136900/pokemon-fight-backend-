@@ -1,5 +1,7 @@
 import axios from "axios";
 import { importDataFromURL } from "../utils/importDataFromURL.js";
+import History from "../Models/history.js";
+
 
 const POKE_BASE_URL = "https://pokeapi.co/api/v2/pokemon";
 
@@ -64,6 +66,17 @@ export async function fightPokemon(req, res) {
     if (power1 > power2) winner = pokemon1.name;
     if (power2 > power1) winner = pokemon2.name;
 
+    // 🔥🔥🔥 YAHI ADD KARNA HAI (EXACT PLACE)
+    await History.create({
+      user: req.userId,
+      pokemon1: pokemon1.name,
+      pokemon2: pokemon2.name,
+      winner,
+      power1,
+      power2,
+    });
+
+    // response SAME rahega
     res.json({
       pokemon1: { name: pokemon1.name, power: power1 },
       pokemon2: { name: pokemon2.name, power: power2 },
@@ -71,6 +84,20 @@ export async function fightPokemon(req, res) {
     });
   } catch (err) {
     console.error("FIGHT ERROR:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+}
+
+
+
+
+export async function getHistory(req, res) {
+  try {
+    const history = await History.find({ user: req.userId })
+      .sort({ createdAt: -1 });
+
+    res.json(history);
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 }
