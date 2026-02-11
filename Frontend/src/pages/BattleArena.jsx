@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 import { play, sounds } from "../utils/sound.js";
 import { useLocation, useNavigate } from "react-router-dom";
+import instance from "../axiosConfig";
 // import bg from "../../public/img/img1.jpg";
 import bgVideo from "../../public/img/video3.mp4";
 
@@ -31,6 +32,7 @@ function BattleArena() {
   const [turn, setTurn] = useState("p1");
   const arena = useRef(null);
   const winPlayed = useRef(false);
+  const historySaved = useRef(false);
 
   const p1Ref = useRef(null);
   const p2Ref = useRef(null);
@@ -123,6 +125,24 @@ function BattleArena() {
       winPlayed.current = true;
     }
   }, [winner]);
+
+  // Save fight result to backend only after the arena fight is finished
+  useEffect(() => {
+    if (!winner || historySaved.current) return;
+    if (!pokemons || pokemons.length < 2) return;
+
+    const payload = {
+      pokemon1: { id: pokemons[0].id, name: pokemons[0].name },
+      pokemon2: { id: pokemons[1].id, name: pokemons[1].name },
+    };
+
+    instance
+      .post("/pokemon/fight", payload, { withCredentials: true })
+      .then(() => {
+        historySaved.current = true;
+      })
+      .catch((err) => console.error("Error saving fight result:", err));
+  }, [winner, pokemons]);
 
   return (
     <div
