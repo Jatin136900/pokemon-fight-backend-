@@ -89,11 +89,9 @@
 // }
 
 
-
-
 import axios from "axios";
 import { importDataFromURL } from "../utils/importDataFromURL.js";
-import Users from "../Models/user.js";
+import History from "../Models/history.js";
 import { io } from "../index.js";
 
 const POKE_BASE_URL = "https://pokeapi.co/api/v2/pokemon";
@@ -123,6 +121,11 @@ export async function fightPokemon(req, res) {
   try {
     const { pokemon1, pokemon2 } = req.body;
 
+    // 🔐 Safety check (important)
+    if (!req.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const [p1Res, p2Res] = await Promise.all([
       axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon1.id}`),
       axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon2.id}`),
@@ -148,26 +151,18 @@ export async function fightPokemon(req, res) {
     if (power1 > power2) winner = pokemon1.name;
     if (power2 > power1) winner = pokemon2.name;
 
-    // ✅ SAVE INSIDE USER DOCUMENT
-    const user = await Users.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const newHistory = {
+    // ✅ SAVE HISTORY WITH USER ID
+    const history = await History.create({
+      user: req.userId, // important
       pokemon1: pokemon1.name,
       pokemon2: pokemon2.name,
       winner,
       power1,
       power2,
-    };
+    });
 
-    user.history.push(newHistory);
-    await user.save();
-
-    // 🔥 REAL-TIME EMIT
-    io.emit("newHistory", newHistory);
+    // 🔥 Emit only to connected clients
+    io.emit("newHistory", history);
 
     res.json({
       pokemon1: { name: pokemon1.name, power: power1 },
@@ -179,21 +174,20 @@ export async function fightPokemon(req, res) {
   }
 }
 
+/* ================= GET USER HISTORY ================= */
 export async function getHistory(req, res) {
   try {
-    const user = await Users.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!req.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // newest first
-    const sortedHistory = user.history.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
+    const history = await History.find({ user: req.userId })
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json(sortedHistory);
+    res.json(history);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 }
+
